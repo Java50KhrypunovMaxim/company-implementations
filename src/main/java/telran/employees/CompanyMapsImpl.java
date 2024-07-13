@@ -1,12 +1,22 @@
 package telran.employees;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import telran.io.Persistable;
 
@@ -113,28 +123,41 @@ public class CompanyMapsImpl implements Company, Persistable {
 
 	@Override
 	public void save(String filePathStr) {
-		
-		 CompanyData data = new CompanyData(employees, employeesDepartment, factorManagers);
-	        try (ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(filePathStr))) {
-	            output.writeObject(data);
-	        } catch (IOException e) {
+
+		   try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePathStr))) {
+	            for (Employee employee : employees.values()) {
+	                writer.write(employee.getJSON());
+	        }}
+	        catch (IOException e) {
 	            e.printStackTrace();
 	        }
-		
 	}
 
-	@Override
-	public void restore(String filePathStr) {
-		try (ObjectInputStream input = new ObjectInputStream(new FileInputStream(filePathStr))) {
-            CompanyData data = (CompanyData) input.readObject();
-            this.employees = data.getEmployees();
-            this.employeesDepartment = data.getEmployeesDepartment();
-            this.factorManagers = data.getFactorManagers();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
+	
+	 @Override
+	    public void restore(String filePathStr) {
+	        try (BufferedReader reader = new BufferedReader(new FileReader(filePathStr))) {
+	            JSONParser jsonParser = new JSONParser();
+	            JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
+	            employees.clear();
+	            employeesDepartment.clear();
+	            factorManagers.clear();
+	            for (Object obj : jsonArray) {
+	                JSONObject jsonObject = (JSONObject) obj;
+	                long id = (long) jsonObject.get("id");
+	                int basicSalary = ((Long) jsonObject.get("basicSalary")).intValue(); 
+	                String department = (String) jsonObject.get("department");
+
+	                Employee employee = new Employee(id, basicSalary, department);
+	                addEmployee(employee); 
+	            }
+	        } catch (IOException | ParseException e) {
+	            e.printStackTrace();
+	        }
 	    }
+
+    }
+	    
 
 	
 

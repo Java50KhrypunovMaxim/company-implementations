@@ -10,6 +10,10 @@ public class WageEmployee extends Employee {
 		this.hours = hours;
 		this.wage = wage;
 	}
+	
+	public WageEmployee() {
+		
+	}
 	public int getHours() {
 		return hours;
 	}

@@ -11,6 +11,10 @@ public class SalesPerson extends WageEmployee {
 		this.percent = percent;
 		this.sales = sales;
 	}
+	public SalesPerson() {
+		
+	}
+
 	@Override
 	public int computeSalary() {
 		return Math.round(super.computeSalary() + sales * percent / 100);
