@@ -1,5 +1,6 @@
 package telran.employees;
 
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
@@ -7,7 +8,7 @@ import org.json.JSONObject;
 
 import telran.io.JSONable;
 
-public class Employee implements Comparable<Employee>, JSONable{
+public class Employee implements Comparable<Employee>, Serializable, JSONable{
 	private long id;
 	private int basicSalary;
 	private String department;
