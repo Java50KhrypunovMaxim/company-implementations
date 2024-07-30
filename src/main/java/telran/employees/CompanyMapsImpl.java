@@ -1,25 +1,13 @@
 package telran.employees;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.nio.file.Files;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import telran.io.Persistable;
-
+//So far we do consider optimization
 public class CompanyMapsImpl implements Company, Persistable {
 	TreeMap<Long, Employee> employees = new TreeMap<>();
 	TreeMap<String, List<Employee>> employeesDepartment = new TreeMap<>();
@@ -123,42 +111,25 @@ public class CompanyMapsImpl implements Company, Persistable {
 
 	@Override
 	public void save(String filePathStr) {
+		try(PrintWriter writer = new PrintWriter(filePathStr)) {
+			this.forEach(empl -> writer.println(empl.getJSON()));
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		
+	}
 
-		   try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePathStr))) {
-	            for (Employee employee : employees.values()) {
-	                writer.write(employee.getJSON());
-	        }}
-	        catch (IOException e) {
-	            e.printStackTrace();
-	        }
+	@Override
+	public void restore(String filePathStr) {
+		try(BufferedReader reader = new BufferedReader(new FileReader(filePathStr))){
+			reader.lines().map(l -> (Employee) new Employee().setObject(l))
+			.forEach(this::addEmployee);
+		}catch(Exception e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 
 	
-	 @Override
-	    public void restore(String filePathStr) {
-	        try (BufferedReader reader = new BufferedReader(new FileReader(filePathStr))) {
-	            JSONParser jsonParser = new JSONParser();
-	            JSONArray jsonArray = (JSONArray) jsonParser.parse(reader);
-	            employees.clear();
-	            employeesDepartment.clear();
-	            factorManagers.clear();
-	            for (Object obj : jsonArray) {
-	                JSONObject jsonObject = (JSONObject) obj;
-	                long id = (long) jsonObject.get("id");
-	                int basicSalary = ((Long) jsonObject.get("basicSalary")).intValue(); 
-	                String department = (String) jsonObject.get("department");
 
-	                Employee employee = new Employee(id, basicSalary, department);
-	                addEmployee(employee); 
-	            }
-	        } catch (IOException | ParseException e) {
-	            e.printStackTrace();
-	        }
-	    }
-
-    }
-	    
-
-	
-
-
+}

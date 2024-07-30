@@ -5,14 +5,12 @@ import org.json.JSONObject;
 public class WageEmployee extends Employee {
 	private int hours;
 	private int wage; //one hour salary cost
+	public WageEmployee() {
+	}
 	public WageEmployee(long id, int basicSalary, String department, int hours, int wage) {
 		super(id, basicSalary, department);
 		this.hours = hours;
 		this.wage = wage;
-	}
-	
-	public WageEmployee() {
-		
 	}
 	public int getHours() {
 		return hours;
@@ -32,16 +30,26 @@ public class WageEmployee extends Employee {
 	}
 	@Override
     protected void fillJSONObject(JSONObject jsonObject) {
-		fillClassName(jsonObject);
+    	fillClassName(jsonObject);
     	super.fillJSONObject(jsonObject);
-    	jsonObject.put("hours", hours);
     	jsonObject.put("wage", wage);
+    	jsonObject.put("hours", hours);
     }
     @Override
     protected void fillEmployee(JSONObject jsonObject) {
     	super.fillEmployee(jsonObject);
-    	hours = jsonObject.getInt("hours");
     	wage = jsonObject.getInt("wage");
+    	hours = jsonObject.getInt("hours");
+    }
+    @Override
+    public String toString() {
+        return "WageEmployee{" +
+                "id=" + getId() +
+                ", basicSalary=" + getBasicSalary() +
+                ", department='" + getDepartment() + '\'' +
+                ", hours=" + hours +
+                ", wage=" + wage +
+                '}';
     }
   
 	

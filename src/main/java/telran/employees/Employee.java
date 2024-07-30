@@ -1,6 +1,5 @@
 package telran.employees;
 
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Objects;
 
@@ -8,7 +7,7 @@ import org.json.JSONObject;
 
 import telran.io.JSONable;
 
-public class Employee implements Comparable<Employee>, Serializable, JSONable{
+public class Employee implements Comparable<Employee>, JSONable{
 	private long id;
 	private int basicSalary;
 	private String department;
@@ -70,23 +69,33 @@ public class Employee implements Comparable<Employee>, Serializable, JSONable{
 		}
 	}
 	@Override
-	public void setObject(String json) {
+	public JSONable setObject(String json) {
 		JSONObject jsonObject = new JSONObject(json);
 		String className = jsonObject.getString("className");
 		try {
 			Employee empl = (Employee) Class.forName(className)
 					.getConstructor().newInstance();
 			empl.fillEmployee(jsonObject);
+			return empl;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		
 		
 	}
 	protected void fillEmployee(JSONObject jsonObject) {
 		id = jsonObject.getLong("id");
 		department = jsonObject.getString("department");
 		basicSalary = jsonObject.getInt("basicSalary");
-		
 	}
+	
+	@Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", basicSalary=" + basicSalary +
+                ", department='" + department + '\'' +
+                '}';
+    }
 	
 }
